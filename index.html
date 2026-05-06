@@ -1,0 +1,1510 @@
+python3 << 'PYEOF'
+import re, json
+
+with open('/mnt/user-data/uploads/eidro-al-quran.html','r') as f:
+    content = f.read()
+
+matches = re.findall(r'data:image/jpeg;base64,([^"]+)', content)
+logo_b64 = matches[0]
+
+html = f'''<!DOCTYPE html>
+<html lang="sq" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eidro Al Quran">
+<meta name="description" content="Eidro Al Quran — Dëgjo dhe ndjej qetësinë e Kuranit">
+<link rel="apple-touch-icon" href="data:image/jpeg;base64,{logo_b64}">
+<link rel="manifest" id="pwa-manifest">
+<title>Eidro Al Quran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Tajawal:wght@300;400;500&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   EIDRO AL QURAN — Apple-Inspired Premium UI
+   ══════════════════════════════════════════ */
+:root {{
+  --obsidian: #050505;
+  --midnight: #0a0a0a;
+  --deep: #111114;
+  --surface: rgba(255,255,255,0.04);
+  --surface-2: rgba(255,255,255,0.07);
+  --surface-3: rgba(255,255,255,0.11);
+  --border: rgba(255,255,255,0.08);
+  --border-2: rgba(255,255,255,0.14);
+  --gold: #c9a84c;
+  --gold-bright: #e8c97a;
+  --gold-dim: #8a6f30;
+  --gold-glow: rgba(201,168,76,0.15);
+  --gold-glow-2: rgba(201,168,76,0.25);
+  --text: #f0ece0;
+  --text-2: rgba(240,236,224,0.7);
+  --text-3: rgba(240,236,224,0.4);
+  --green: #4caf79;
+  --radius: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 34px;
+  --blur: blur(20px) saturate(180%);
+  --blur-sm: blur(12px) saturate(160%);
+  --shadow-gold: 0 0 40px rgba(201,168,76,0.18), 0 0 80px rgba(201,168,76,0.08);
+  --shadow-deep: 0 20px 60px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4);
+}}
+
+*, *::before, *::after {{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }}
+
+html, body {{
+  height:100%; overflow:hidden; overscroll-behavior:none;
+  background:var(--obsidian);
+  color:var(--text);
+  font-family:'Playfair Display', Georgia, serif;
+  -webkit-font-smoothing:antialiased;
+}}
+
+/* ── SPLASH ── */
+#splash {{
+  position:fixed; inset:0; z-index:9999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--obsidian);
+  transition:opacity 1s cubic-bezier(0.25,0.46,0.45,0.94), transform 1s cubic-bezier(0.25,0.46,0.45,0.94);
+}}
+#splash.exit {{ opacity:0; transform:scale(1.03); pointer-events:none; }}
+
+.splash-bg {{
+  position:absolute; inset:0; overflow:hidden;
+}}
+.splash-orb {{
+  position:absolute; border-radius:50%; filter:blur(80px);
+  animation:orbFloat 6s ease-in-out infinite;
+}}
+.splash-orb-1 {{
+  width:400px; height:400px; top:-100px; left:-100px;
+  background:radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+  animation-delay:0s;
+}}
+.splash-orb-2 {{
+  width:300px; height:300px; bottom:-80px; right:-80px;
+  background:radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+  animation-delay:-3s;
+}}
+@keyframes orbFloat {{
+  0%,100% {{ transform:translate(0,0) scale(1); }}
+  50% {{ transform:translate(20px,-20px) scale(1.05); }}
+}}
+
+.splash-content {{ position:relative; z-index:1; text-align:center; }}
+
+.splash-logo-wrap {{
+  width:120px; height:120px; margin:0 auto 28px;
+  border-radius:28px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.2), var(--shadow-deep);
+  animation:splashReveal 1s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  opacity:0; transform:scale(0.7);
+}}
+.splash-logo-wrap img {{
+  width:100%; height:100%; object-fit:cover;
+}}
+@keyframes splashReveal {{
+  to {{ opacity:1; transform:scale(1); }}
+}}
+
+.splash-title {{
+  font-size:1.6rem; letter-spacing:0.3em; font-weight:500;
+  color:var(--text); text-transform:uppercase;
+  animation:fadeUp 0.8s 0.4s ease forwards; opacity:0; transform:translateY(16px);
+}}
+.splash-tagline {{
+  margin-top:8px; font-size:0.85rem; letter-spacing:0.12em;
+  color:var(--gold); font-style:italic; font-family:'Playfair Display', serif;
+  animation:fadeUp 0.8s 0.6s ease forwards; opacity:0; transform:translateY(16px);
+}}
+@keyframes fadeUp {{ to {{ opacity:1; transform:translateY(0); }} }}
+
+.splash-loader {{
+  margin-top:48px; width:100px; height:1px;
+  background:rgba(255,255,255,0.1); border-radius:1px; overflow:hidden;
+  animation:fadeUp 0.8s 0.8s ease forwards; opacity:0;
+}}
+.splash-loader-fill {{
+  height:100%; width:0; border-radius:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation:loaderFill 2.2s 1s ease forwards;
+}}
+@keyframes loaderFill {{ to {{ width:100%; }} }}
+
+/* ── APP SHELL ── */
+#app {{
+  display:flex; flex-direction:column;
+  height:100vh; height:100dvh; overflow:hidden;
+  position:relative;
+}}
+
+/* ── AMBIENT BACKGROUND ── */
+.ambient-bg {{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 800px 600px at 0% 0%, rgba(201,168,76,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 800px at 100% 100%, rgba(201,168,76,0.03) 0%, transparent 60%),
+    linear-gradient(160deg, #050505 0%, #0a0a0a 40%, #080808 100%);
+}}
+
+/* ── HEADER ── */
+header {{
+  position:relative; z-index:100; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px;
+  padding-top:calc(16px + env(safe-area-inset-top));
+  background:rgba(5,5,5,0.85);
+  -webkit-backdrop-filter:var(--blur);
+  backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--border);
+}}
+
+.header-brand {{
+  display:flex; align-items:center; gap:12px; cursor:pointer;
+}}
+.header-logo {{
+  width:36px; height:36px; border-radius:10px; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(201,168,76,0.2);
+  flex-shrink:0;
+}}
+.header-logo img {{
+  width:100%; height:100%; object-fit:cover;
+}}
+.header-title {{
+  font-size:0.95rem; letter-spacing:0.2em; font-weight:500;
+  color:var(--text); text-transform:uppercase;
+}}
+
+.header-actions {{ display:flex; gap:6px; }}
+.icon-btn {{
+  width:38px; height:38px; border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text-2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:15px;
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  -webkit-backdrop-filter:var(--blur-sm); backdrop-filter:var(--blur-sm);
+}}
+.icon-btn:hover, .icon-btn.active {{
+  border-color:rgba(201,168,76,0.4);
+  color:var(--gold);
+  background:var(--gold-glow);
+  box-shadow:var(--shadow-gold);
+  transform:scale(1.08);
+}}
+
+/* ── TABS ── */
+.tab-bar {{
+  position:relative; z-index:90; flex-shrink:0;
+  display:flex; align-items:center;
+  padding:0 20px; gap:0;
+  background:rgba(5,5,5,0.8);
+  -webkit-backdrop-filter:var(--blur-sm); backdrop-filter:var(--blur-sm);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto; scrollbar-width:none;
+}}
+.tab-bar::-webkit-scrollbar {{ display:none; }}
+.tab-btn {{
+  padding:12px 16px; font-size:0.8rem; letter-spacing:0.08em;
+  font-family:'Playfair Display', serif; font-weight:500;
+  color:var(--text-3); border:none; background:transparent;
+  cursor:pointer; white-space:nowrap;
+  position:relative; transition:color 0.25s;
+}}
+.tab-btn::after {{
+  content:''; position:absolute; bottom:0; left:16px; right:16px;
+  height:2px; background:var(--gold); border-radius:2px 2px 0 0;
+  transform:scaleX(0); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}}
+.tab-btn.active {{
+  color:var(--gold);
+}}
+.tab-btn.active::after {{ transform:scaleX(1); }}
+
+/* ── SEARCH BAR ── */
+.search-wrap {{
+  position:relative; z-index:89; flex-shrink:0;
+  padding:10px 16px;
+  background:rgba(5,5,5,0.85);
+  border-bottom:1px solid var(--border);
+  display:none;
+}}
+.search-wrap.visible {{ display:block; }}
+.search-inner {{
+  position:relative; display:flex; align-items:center;
+}}
+.search-inner svg {{
+  position:absolute; left:12px; color:var(--text-3); flex-shrink:0;
+}}
+#search-input {{
+  width:100%; padding:10px 16px 10px 40px;
+  background:var(--surface-2); border:1px solid var(--border);
+  border-radius:14px; color:var(--text);
+  font-family:'Playfair Display', serif; font-size:0.95rem;
+  outline:none; transition:all 0.25s;
+}}
+#search-input:focus {{
+  border-color:rgba(201,168,76,0.4);
+  background:var(--surface-3);
+  box-shadow:0 0 0 3px rgba(201,168,76,0.08);
+}}
+#search-input::placeholder {{ color:var(--text-3); font-style:italic; }}
+
+/* ── FILTER PILLS ── */
+.filter-bar {{
+  display:flex; gap:8px; padding:10px 16px;
+  background:rgba(5,5,5,0.7);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto; scrollbar-width:none;
+  flex-shrink:0; z-index:88; position:relative;
+  display:none;
+}}
+.filter-bar.visible {{ display:flex; }}
+.filter-bar::-webkit-scrollbar {{ display:none; }}
+.filter-pill {{
+  padding:5px 16px; border-radius:20px; border:1px solid var(--border);
+  background:transparent; color:var(--text-3);
+  font-family:'Playfair Display', serif; font-size:0.78rem;
+  letter-spacing:0.06em; cursor:pointer; white-space:nowrap;
+  transition:all 0.25s;
+}}
+.filter-pill.active {{
+  background:rgba(201,168,76,0.12); border-color:rgba(201,168,76,0.4);
+  color:var(--gold);
+}}
+
+/* ── MAIN SCROLL AREA ── */
+.scroll-area {{
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+  position:relative; z-index:1;
+  -webkit-overflow-scrolling:touch;
+}}
+.scroll-area::-webkit-scrollbar {{ width:3px; }}
+.scroll-area::-webkit-scrollbar-thumb {{ background:var(--border); border-radius:3px; }}
+
+/* ── HERO SECTION ── */
+.hero {{
+  padding:32px 20px 24px;
+  text-align:center;
+  position:relative; overflow:hidden;
+}}
+.hero::before {{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 300px 200px at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}}
+.hero-arabic {{
+  font-family:'Amiri', serif; font-size:2.2rem;
+  color:var(--gold-bright); direction:rtl;
+  text-shadow:0 0 40px rgba(201,168,76,0.3);
+  animation:fadeUp 0.8s ease forwards;
+}}
+.hero-sub {{
+  margin-top:8px; font-size:0.8rem; letter-spacing:0.15em;
+  color:var(--text-3); text-transform:uppercase;
+  animation:fadeUp 0.8s 0.1s ease forwards; opacity:0;
+}}
+.hero-divider {{
+  width:40px; height:1px; margin:16px auto;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation:fadeUp 0.8s 0.2s ease forwards; opacity:0;
+}}
+
+/* ── SURAH GRID ── */
+.surah-grid {{
+  padding:0 16px 120px;
+  display:flex; flex-direction:column; gap:8px;
+}}
+
+.surah-card {{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--surface);
+  cursor:pointer;
+  animation:cardReveal 0.5s ease both;
+  position:relative; overflow:hidden;
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              border-color 0.25s, background 0.25s,
+              box-shadow 0.3s;
+  -webkit-backdrop-filter:var(--blur-sm); backdrop-filter:var(--blur-sm);
+}}
+.surah-card::before {{
+  content:''; position:absolute; inset:0; opacity:0;
+  background:linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 60%);
+  transition:opacity 0.3s;
+}}
+.surah-card:active {{
+  transform:scale(0.98);
+  background:rgba(201,168,76,0.06);
+  border-color:rgba(201,168,76,0.2);
+}}
+@media (hover:hover) {{
+  .surah-card:hover {{
+    transform:translateY(-2px) scale(1.008);
+    border-color:rgba(201,168,76,0.28);
+    background:rgba(255,255,255,0.06);
+    box-shadow:var(--shadow-deep), 0 0 20px rgba(201,168,76,0.06);
+  }}
+  .surah-card:hover::before {{ opacity:1; }}
+}}
+@keyframes cardReveal {{
+  from {{ opacity:0; transform:translateY(20px); }}
+  to {{ opacity:1; transform:translateY(0); }}
+}}
+
+.surah-num-badge {{
+  width:42px; height:42px; flex-shrink:0;
+  border-radius:12px;
+  border:1px solid rgba(201,168,76,0.18);
+  background:rgba(201,168,76,0.06);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.72rem; color:var(--gold);
+  letter-spacing:0.04em;
+}}
+.surah-body {{ flex:1; min-width:0; }}
+.surah-arabic {{
+  font-family:'Amiri', serif; font-size:1.3rem;
+  color:var(--gold-bright); direction:rtl; line-height:1.3;
+}}
+.surah-latin {{
+  font-size:0.9rem; font-weight:500; color:var(--text); margin-top:1px;
+  letter-spacing:0.02em;
+}}
+.surah-sq {{
+  font-size:0.75rem; color:var(--text-3); font-style:italic; margin-top:1px;
+}}
+.surah-meta {{
+  flex-shrink:0; display:flex; flex-direction:column;
+  align-items:flex-end; gap:5px;
+}}
+.surah-ayahs {{
+  font-size:0.7rem; color:var(--text-3); letter-spacing:0.04em;
+}}
+.type-badge {{
+  font-size:0.6rem; padding:2px 7px; border-radius:6px;
+  letter-spacing:0.05em;
+}}
+.type-mekke {{
+  background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.22);
+  color:var(--gold-dim);
+}}
+.type-medine {{
+  background:rgba(76,175,121,0.1); border:1px solid rgba(76,175,121,0.22);
+  color:var(--green);
+}}
+.play-icon {{
+  width:32px; height:32px; flex-shrink:0; border-radius:50%;
+  background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.25);
+  color:var(--gold); display:flex; align-items:center; justify-content:center;
+  font-size:11px; margin-left:8px;
+  transition:all 0.25s;
+}}
+.surah-card:hover .play-icon {{
+  background:rgba(201,168,76,0.2);
+  box-shadow:0 0 14px rgba(201,168,76,0.2);
+}}
+
+/* ── SURAH VIEW ── */
+#surah-view {{
+  position:fixed; inset:0; z-index:200;
+  display:flex; flex-direction:column;
+  background:var(--obsidian);
+  transform:translateX(100%);
+  transition:transform 0.5s cubic-bezier(0.23,1,0.32,1);
+}}
+#surah-view.open {{ transform:translateX(0); }}
+
+.sv-header {{
+  display:flex; align-items:center; gap:14px;
+  padding:16px 20px;
+  padding-top:calc(16px + env(safe-area-inset-top));
+  background:rgba(5,5,5,0.9);
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}}
+.sv-back {{
+  width:38px; height:38px; border-radius:12px;
+  border:1px solid var(--border); background:var(--surface);
+  color:var(--text-2); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; flex-shrink:0;
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}}
+.sv-back:hover {{ border-color:rgba(201,168,76,0.4); color:var(--gold); transform:scale(1.08); }}
+.sv-info {{ flex:1; }}
+.sv-arabic {{
+  font-family:'Amiri', serif; font-size:1.5rem;
+  color:var(--gold-bright); direction:rtl; line-height:1.2;
+}}
+.sv-meta {{
+  font-size:0.78rem; color:var(--text-3); letter-spacing:0.08em; margin-top:2px;
+}}
+
+/* ── AUDIO PLAYER (in surah view) ── */
+.audio-panel {{
+  flex-shrink:0; padding:18px 20px;
+  background:rgba(10,10,10,0.95);
+  border-bottom:1px solid var(--border);
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+}}
+.player-info-row {{
+  display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}}
+.player-thumb {{
+  width:52px; height:52px; border-radius:14px; overflow:hidden;
+  border:1px solid rgba(201,168,76,0.2);
+  box-shadow:0 0 20px rgba(201,168,76,0.1);
+  flex-shrink:0;
+}}
+.player-thumb img {{ width:100%; height:100%; object-fit:cover; }}
+.player-text {{ flex:1; }}
+.player-title {{
+  font-size:0.95rem; font-weight:500; color:var(--text);
+  letter-spacing:0.04em;
+}}
+.player-reciter {{
+  font-size:0.75rem; color:var(--text-3); font-style:italic; margin-top:2px;
+}}
+.player-controls {{
+  display:flex; align-items:center; gap:14px;
+}}
+.ctrl-btn {{
+  width:34px; height:34px; border-radius:50%; border:none;
+  background:transparent; color:var(--text-3);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:17px; transition:all 0.2s;
+}}
+.ctrl-btn:hover {{ color:var(--text); }}
+.ctrl-play {{
+  width:50px; height:50px; border-radius:50%;
+  background:var(--gold); border:none;
+  color:var(--obsidian); font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 24px rgba(201,168,76,0.4);
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}}
+.ctrl-play:hover {{ background:var(--gold-bright); transform:scale(1.08); }}
+.ctrl-play.playing {{
+  animation:playerPulse 2s ease-in-out infinite;
+}}
+@keyframes playerPulse {{
+  0%,100% {{ box-shadow:0 0 24px rgba(201,168,76,0.4); }}
+  50% {{ box-shadow:0 0 36px rgba(201,168,76,0.6); }}
+}}
+
+.progress-section {{ margin-top:12px; }}
+.progress-track {{
+  width:100%; height:3px; background:rgba(255,255,255,0.08);
+  border-radius:3px; cursor:pointer; position:relative;
+  overflow:visible;
+}}
+.progress-fill {{
+  height:100%; width:0%; border-radius:3px;
+  background:linear-gradient(90deg, var(--gold-dim), var(--gold));
+  transition:width 0.4s linear; position:relative;
+}}
+.progress-dot {{
+  position:absolute; right:-5px; top:50%; transform:translateY(-50%);
+  width:11px; height:11px; border-radius:50%;
+  background:var(--gold); box-shadow:0 0 8px rgba(201,168,76,0.7);
+  transition:transform 0.2s;
+}}
+.progress-track:hover .progress-dot {{ transform:translateY(-50%) scale(1.3); }}
+.time-labels {{
+  display:flex; justify-content:space-between; margin-top:6px;
+  font-size:0.68rem; color:var(--text-3);
+}}
+
+/* ── AYAH LIST ── */
+.ayah-scroll {{
+  flex:1; overflow-y:auto;
+  padding:16px 16px 80px;
+  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}}
+.ayah-scroll::-webkit-scrollbar {{ width:3px; }}
+.ayah-scroll::-webkit-scrollbar-thumb {{ background:var(--border); border-radius:3px; }}
+
+.ayah-card {{
+  padding:22px 18px; margin-bottom:8px;
+  border-radius:var(--radius); border:1px solid transparent;
+  background:var(--surface);
+  animation:cardReveal 0.4s ease both;
+  transition:all 0.4s ease;
+}}
+.ayah-card.active {{
+  border-color:rgba(201,168,76,0.25);
+  background:rgba(201,168,76,0.05);
+  box-shadow:0 0 30px rgba(201,168,76,0.07);
+}}
+.ayah-num {{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%;
+  border:1px solid var(--border); font-size:0.68rem;
+  color:var(--gold); margin-bottom:10px;
+}}
+.ayah-arabic {{
+  font-family:'Amiri', serif; font-size:1.5rem; line-height:2.1;
+  color:var(--text); direction:rtl; text-align:right;
+  margin-bottom:10px;
+}}
+.ayah-card.active .ayah-arabic {{ color:var(--gold-bright); }}
+.divider-line {{
+  width:30px; height:1px; margin:8px 0;
+  background:linear-gradient(90deg, var(--gold-dim), transparent);
+}}
+.ayah-trans {{
+  font-size:0.85rem; line-height:1.65; color:var(--text-3);
+  font-style:italic; margin-bottom:6px;
+}}
+.ayah-sq {{
+  font-size:0.82rem; line-height:1.65; color:rgba(240,236,224,0.35);
+}}
+
+/* ── NASHEED TAB ── */
+.nasheed-section {{
+  padding:20px 16px 120px;
+}}
+.section-header {{
+  text-align:center; padding:0 0 20px;
+}}
+.section-title {{
+  font-size:1.1rem; letter-spacing:0.15em; color:var(--text);
+  text-transform:uppercase;
+}}
+.section-sub {{
+  font-size:0.78rem; color:var(--text-3); font-style:italic;
+  margin-top:4px;
+}}
+
+.nasheed-grid {{
+  display:flex; flex-direction:column; gap:8px;
+}}
+.nasheed-card {{
+  display:flex; align-items:center; gap:14px;
+  padding:12px 14px;
+  border-radius:var(--radius); border:1px solid var(--border);
+  background:var(--surface); cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative; overflow:hidden;
+}}
+.nasheed-card.active {{
+  border-color:rgba(201,168,76,0.3);
+  background:rgba(201,168,76,0.06);
+}}
+.nasheed-card::before {{
+  content:''; position:absolute; inset:0; opacity:0;
+  background:linear-gradient(90deg, rgba(201,168,76,0.06) 0%, transparent 60%);
+  transition:opacity 0.3s;
+}}
+.nasheed-card:hover {{ transform:translateX(4px); }}
+.nasheed-card:hover::before {{ opacity:1; }}
+
+.nasheed-cover {{
+  width:50px; height:50px; border-radius:12px; overflow:hidden;
+  border:1px solid rgba(201,168,76,0.15); flex-shrink:0;
+  background:rgba(201,168,76,0.06);
+  display:flex; align-items:center; justify-content:center;
+}}
+.nasheed-cover img {{
+  width:100%; height:100%; object-fit:cover;
+}}
+.nasheed-cover-placeholder {{
+  font-size:22px; opacity:0.5;
+}}
+.nasheed-info {{ flex:1; min-width:0; }}
+.nasheed-title {{
+  font-size:0.9rem; font-weight:500; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}}
+.nasheed-artist {{
+  font-size:0.75rem; color:var(--text-3); margin-top:2px; font-style:italic;
+}}
+.nasheed-duration {{
+  font-size:0.7rem; color:var(--text-3); flex-shrink:0;
+}}
+.nasheed-play {{
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.25);
+  color:var(--gold); display:flex; align-items:center; justify-content:center;
+  font-size:12px; flex-shrink:0; transition:all 0.25s;
+}}
+.nasheed-card:hover .nasheed-play,
+.nasheed-card.active .nasheed-play {{
+  background:rgba(201,168,76,0.2);
+  box-shadow:0 0 14px rgba(201,168,76,0.25);
+}}
+
+/* ── MINI PLAYER (global persistent) ── */
+#mini-player {{
+  position:fixed; bottom:0; left:0; right:0; z-index:150;
+  padding:10px 18px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(5,5,5,0.95);
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  border-top:1px solid var(--border);
+  display:none; align-items:center; gap:12px;
+  box-shadow:0 -8px 30px rgba(0,0,0,0.5);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.23,1,0.32,1);
+}}
+#mini-player.visible {{
+  display:flex; transform:translateY(0);
+}}
+
+.mini-thumb {{
+  width:40px; height:40px; border-radius:10px; overflow:hidden;
+  border:1px solid rgba(201,168,76,0.15); flex-shrink:0;
+}}
+.mini-thumb img {{ width:100%; height:100%; object-fit:cover; }}
+.mini-info {{ flex:1; min-width:0; }}
+.mini-title {{
+  font-size:0.88rem; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}}
+.mini-sub {{ font-size:0.7rem; color:var(--text-3); margin-top:1px; }}
+
+.mini-progress {{
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:transparent;
+}}
+.mini-progress-fill {{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--gold-dim), var(--gold));
+  transition:width 0.4s linear;
+}}
+
+.mini-ctrl {{
+  width:38px; height:38px; border-radius:50%;
+  background:var(--gold); border:none;
+  color:var(--obsidian); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0;
+  box-shadow:0 0 16px rgba(201,168,76,0.35);
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}}
+.mini-ctrl:hover {{ background:var(--gold-bright); transform:scale(1.1); }}
+.mini-close {{
+  width:30px; height:30px; border-radius:50%;
+  border:none; background:transparent;
+  color:var(--text-3); cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; flex-shrink:0;
+}}
+.mini-close:hover {{ color:var(--text); }}
+
+/* ── FOOTER COPYRIGHT ── */
+.footer-copyright {{
+  padding:20px 20px;
+  text-align:center; border-top:1px solid var(--border);
+  background:rgba(5,5,5,0.7);
+}}
+.footer-copyright p {{
+  font-size:0.7rem; color:var(--text-3);
+  letter-spacing:0.05em; line-height:1.7;
+}}
+.footer-copyright strong {{
+  color:var(--gold); font-weight:400;
+}}
+
+/* ── LOADING STATES ── */
+.loading-shimmer {{
+  background:linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:8px;
+}}
+@keyframes shimmer {{
+  0% {{ background-position:200% 0; }}
+  100% {{ background-position:-200% 0; }}
+}}
+
+/* ── TOAST ── */
+.toast {{
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:rgba(30,30,30,0.95); border:1px solid var(--border);
+  color:var(--text); padding:10px 20px; border-radius:20px;
+  font-size:0.82rem; letter-spacing:0.04em;
+  -webkit-backdrop-filter:var(--blur); backdrop-filter:var(--blur);
+  opacity:0; transition:all 0.3s; pointer-events:none;
+  z-index:300; white-space:nowrap;
+}}
+.toast.show {{ opacity:1; transform:translateX(-50%) translateY(0); }}
+
+/* ── SCROLLBAR GLOBAL ── */
+* {{ scrollbar-width:thin; scrollbar-color:var(--border) transparent; }}
+
+/* ── PWA INSTALL BANNER ── */
+#install-banner {{
+  display:none; flex-shrink:0;
+  padding:10px 16px; gap:12px; align-items:center;
+  background:linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.04) 100%);
+  border-bottom:1px solid rgba(201,168,76,0.15);
+  position:relative; z-index:87;
+}}
+#install-banner.visible {{ display:flex; }}
+.install-icon {{ font-size:20px; flex-shrink:0; }}
+.install-text {{ flex:1; }}
+.install-text strong {{ font-size:0.82rem; color:var(--text); font-weight:500; }}
+.install-text p {{ font-size:0.72rem; color:var(--text-3); margin-top:1px; }}
+.install-btn {{
+  padding:6px 14px; border-radius:12px;
+  background:var(--gold); border:none; color:var(--obsidian);
+  font-size:0.75rem; font-weight:600; cursor:pointer;
+  letter-spacing:0.04em; flex-shrink:0;
+  transition:all 0.2s;
+}}
+.install-btn:hover {{ background:var(--gold-bright); }}
+.install-close {{
+  width:24px; height:24px; border:none; background:transparent;
+  color:var(--text-3); cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+}}
+
+@media (max-width: 380px) {{
+  .header-title {{ font-size:0.82rem; }}
+  .surah-arabic {{ font-size:1.15rem; }}
+  .ayah-arabic {{ font-size:1.35rem; }}
+}}
+</style>
+</head>
+<body>
+
+<!-- AMBIENT -->
+<div class="ambient-bg"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-bg">
+    <div class="splash-orb splash-orb-1"></div>
+    <div class="splash-orb splash-orb-2"></div>
+  </div>
+  <div class="splash-content">
+    <div class="splash-logo-wrap">
+      <img src="data:image/jpeg;base64,{logo_b64}" alt="Eidro Al Quran">
+    </div>
+    <div class="splash-title">Eidro Al Quran</div>
+    <div class="splash-tagline">Dëgjo dhe ndjej qetësinë e Kuranit</div>
+    <div class="splash-loader"><div class="splash-loader-fill"></div></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- INSTALL BANNER -->
+  <div id="install-banner">
+    <div class="install-icon">📲</div>
+    <div class="install-text">
+      <strong>Instalo Eidro Al Quran</strong>
+      <p>Shto në Home Screen për akses të shpejtë</p>
+    </div>
+    <button class="install-btn" id="install-btn">Instalo</button>
+    <button class="install-close" onclick="document.getElementById('install-banner').classList.remove('visible')">✕</button>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-brand" onclick="setTab('quran')">
+      <div class="header-logo">
+        <img src="data:image/jpeg;base64,{logo_b64}" alt="Logo">
+      </div>
+      <span class="header-title">Eidro Al Quran</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="search-btn" onclick="toggleSearch()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="filter-btn" onclick="toggleFilter()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-quran" onclick="setTab('quran')">Kurani</button>
+    <button class="tab-btn" id="tab-nasheed" onclick="setTab('nasheed')">Nasheede</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap" id="search-wrap">
+    <div class="search-inner">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Kërko sure..." oninput="filterSurahs()">
+    </div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-pill active" onclick="setFilter('all',this)">Të gjitha</button>
+    <button class="filter-pill" onclick="setFilter('mekke',this)">Mekase</button>
+    <button class="filter-pill" onclick="setFilter('medine',this)">Medinase</button>
+  </div>
+
+  <!-- QURAN TAB -->
+  <div class="scroll-area" id="view-quran">
+    <div class="hero">
+      <div class="hero-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <div class="hero-sub">114 Sure · 6236 Ajete</div>
+      <div class="hero-divider"></div>
+    </div>
+    <div class="surah-grid" id="surah-grid"></div>
+    <div class="footer-copyright">
+      <p>© 2026 <strong>Eidro Al Quran</strong>. Të gjitha të drejtat e rezervuara.<br>
+      Përmbajtja, dizajni dhe audio janë të mbrojtura. Ndalohet kopjimi pa leje.</p>
+    </div>
+  </div>
+
+  <!-- NASHEED TAB -->
+  <div class="scroll-area" id="view-nasheed" style="display:none">
+    <div class="nasheed-section">
+      <div class="section-header">
+        <div class="section-title">Nasheede Islame</div>
+        <div class="section-sub">Muzikë shpirtërore dhe kuranore</div>
+      </div>
+      <div class="nasheed-grid" id="nasheed-grid">
+        <div style="text-align:center; padding:40px 20px; color:var(--text-3);">
+          <div style="font-size:2rem; margin-bottom:12px;">🎵</div>
+          <div style="font-size:0.9rem;">Po ngarkohen nasheede-t...</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <p>© 2026 <strong>Eidro Al Quran</strong>. Të gjitha të drejtat e rezervuara.</p>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- SURAH VIEW -->
+<div id="surah-view">
+  <div class="sv-header">
+    <button class="sv-back" onclick="closeSurahView()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <div class="sv-info">
+      <div class="sv-arabic" id="sv-arabic"></div>
+      <div class="sv-meta" id="sv-meta"></div>
+    </div>
+  </div>
+
+  <div class="audio-panel">
+    <div class="player-info-row">
+      <div class="player-thumb">
+        <img src="data:image/jpeg;base64,{logo_b64}" alt="" id="player-thumb">
+      </div>
+      <div class="player-text">
+        <div class="player-title" id="player-title">—</div>
+        <div class="player-reciter">Mishary Rashid Alafasy</div>
+      </div>
+      <div class="player-controls">
+        <button class="ctrl-btn" onclick="prevSurah()" title="E mëparshme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+        <button class="ctrl-play" id="play-btn" onclick="togglePlay()">▶</button>
+        <button class="ctrl-btn" onclick="nextSurah()" title="Tjetra">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="progress-section">
+      <div class="progress-track" id="progress-track" onclick="seekAudio(event)">
+        <div class="progress-fill" id="progress-fill">
+          <div class="progress-dot"></div>
+        </div>
+      </div>
+      <div class="time-labels">
+        <span id="time-cur">0:00</span>
+        <span id="time-tot">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ayah-scroll" id="ayah-list"></div>
+</div>
+
+<!-- MINI PLAYER -->
+<div id="mini-player">
+  <div class="mini-progress"><div class="mini-progress-fill" id="mini-fill"></div></div>
+  <div class="mini-thumb">
+    <img src="data:image/jpeg;base64,{logo_b64}" alt="" id="mini-thumb">
+  </div>
+  <div class="mini-info">
+    <div class="mini-title" id="mini-title">—</div>
+    <div class="mini-sub" id="mini-sub">Eidro Al Quran</div>
+  </div>
+  <button class="mini-ctrl" id="mini-play-btn" onclick="togglePlay()">▶</button>
+  <button class="mini-close" onclick="stopAndClose()">✕</button>
+</div>
+
+<audio id="audio-el" preload="none"></audio>
+
+<script>
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+const SURAHS = [
+  {{ id:1, ar:"الفاتحة", lat:"Al-Fatiha", sq:"Hapëse", ayahs:7, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/001.mp3" }},
+  {{ id:2, ar:"البقرة", lat:"Al-Baqara", sq:"Lopa", ayahs:286, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/002.mp3" }},
+  {{ id:3, ar:"آل عمران", lat:"Ali 'Imran", sq:"Familja e Imranit", ayahs:200, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/003.mp3" }},
+  {{ id:4, ar:"النساء", lat:"An-Nisa", sq:"Gratë", ayahs:176, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/004.mp3" }},
+  {{ id:5, ar:"المائدة", lat:"Al-Ma'ida", sq:"Tryeza", ayahs:120, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/005.mp3" }},
+  {{ id:6, ar:"الأنعام", lat:"Al-An'am", sq:"Bagëtia", ayahs:165, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/006.mp3" }},
+  {{ id:7, ar:"الأعراف", lat:"Al-A'raf", sq:"Vendkalimi", ayahs:206, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/007.mp3" }},
+  {{ id:8, ar:"الأنفال", lat:"Al-Anfal", sq:"Plaçkat", ayahs:75, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/008.mp3" }},
+  {{ id:9, ar:"التوبة", lat:"At-Tawba", sq:"Pendimi", ayahs:129, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/009.mp3" }},
+  {{ id:10, ar:"يونس", lat:"Yunus", sq:"Junusi", ayahs:109, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/010.mp3" }},
+  {{ id:11, ar:"هود", lat:"Hud", sq:"Hudi", ayahs:123, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/011.mp3" }},
+  {{ id:12, ar:"يوسف", lat:"Yusuf", sq:"Jusufi", ayahs:111, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/012.mp3" }},
+  {{ id:13, ar:"الرعد", lat:"Ar-Ra'd", sq:"Bubullima", ayahs:43, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/013.mp3" }},
+  {{ id:14, ar:"إبراهيم", lat:"Ibrahim", sq:"Ibrahimi", ayahs:52, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/014.mp3" }},
+  {{ id:15, ar:"الحجر", lat:"Al-Hijr", sq:"Shkëmbi", ayahs:99, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/015.mp3" }},
+  {{ id:16, ar:"النحل", lat:"An-Nahl", sq:"Bletët", ayahs:128, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/016.mp3" }},
+  {{ id:17, ar:"الإسراء", lat:"Al-Isra", sq:"Udhëtimi Nate", ayahs:111, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/017.mp3" }},
+  {{ id:18, ar:"الكهف", lat:"Al-Kahf", sq:"Shpella", ayahs:110, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/018.mp3" }},
+  {{ id:19, ar:"مريم", lat:"Maryam", sq:"Merjemja", ayahs:98, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/019.mp3" }},
+  {{ id:20, ar:"طه", lat:"Ta-Ha", sq:"Ta-Ha", ayahs:135, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/020.mp3" }},
+  {{ id:21, ar:"الأنبياء", lat:"Al-Anbiya", sq:"Profetët", ayahs:112, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/021.mp3" }},
+  {{ id:22, ar:"الحج", lat:"Al-Hajj", sq:"Haxhi", ayahs:78, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/022.mp3" }},
+  {{ id:24, ar:"النور", lat:"An-Nur", sq:"Drita", ayahs:64, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/024.mp3" }},
+  {{ id:25, ar:"الفرقان", lat:"Al-Furqan", sq:"Dallimi", ayahs:77, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/025.mp3" }},
+  {{ id:29, ar:"العنكبوت", lat:"Al-Ankabut", sq:"Merimanga", ayahs:69, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/029.mp3" }},
+  {{ id:36, ar:"يس", lat:"Ya-Sin", sq:"Ya-Sin", ayahs:83, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/036.mp3" }},
+  {{ id:39, ar:"الزمر", lat:"Az-Zumar", sq:"Grupet", ayahs:75, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/039.mp3" }},
+  {{ id:55, ar:"الرحمن", lat:"Ar-Rahman", sq:"Mëshiruesi", ayahs:78, type:"medine", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/055.mp3" }},
+  {{ id:56, ar:"الواقعة", lat:"Al-Waqi'a", sq:"Ngjarja", ayahs:96, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/056.mp3" }},
+  {{ id:67, ar:"الملك", lat:"Al-Mulk", sq:"Sundimi", ayahs:30, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/067.mp3" }},
+  {{ id:73, ar:"المزمل", lat:"Al-Muzzammil", sq:"I mbuluar me rroba", ayahs:20, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/073.mp3" }},
+  {{ id:78, ar:"النبأ", lat:"An-Naba", sq:"Lajmi i Madh", ayahs:40, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/078.mp3" }},
+  {{ id:87, ar:"الأعلى", lat:"Al-A'la", sq:"I Larti", ayahs:19, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/087.mp3" }},
+  {{ id:112, ar:"الإخلاص", lat:"Al-Ikhlas", sq:"Sinqeriteti", ayahs:4, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/112.mp3" }},
+  {{ id:113, ar:"الفلق", lat:"Al-Falaq", sq:"Agimi", ayahs:5, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/113.mp3" }},
+  {{ id:114, ar:"الناس", lat:"An-Nas", sq:"Njerëzit", ayahs:6, type:"mekke", audio:"https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/114.mp3" }},
+];
+
+const AYAH_DATA = {{
+  1: [
+    {{ ar:"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", lat:"Bismi llāhi r-raḥmāni r-raḥīm", sq:"Në emër të Allahut, të Gjithëmëshirshmit, Mëshirëplotit." }},
+    {{ ar:"الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", lat:"Al-ḥamdu li-llāhi rabbi l-ʿālamīn", sq:"Lavdërimet i takojnë Allahut, Zotit të botëve." }},
+    {{ ar:"الرَّحْمَٰنِ الرَّحِيمِ", lat:"Ar-raḥmāni r-raḥīm", sq:"Të Gjithëmëshirshmit, Mëshirëplotit." }},
+    {{ ar:"مَالِكِ يَوْمِ الدِّينِ", lat:"Māliki yawmi d-dīn", sq:"Sunduesit të Ditës së Gjykimit." }},
+    {{ ar:"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", lat:"Iyyāka naʿbudu wa-iyyāka nastaʿīn", sq:"Vetëm Ty të adhurojmë dhe vetëm prej Teje ndihmë kërkojmë." }},
+    {{ ar:"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", lat:"Ihdinā ṣ-ṣirāṭa l-mustaqīm", sq:"Udhëzona në rrugën e drejtë." }},
+    {{ ar:"صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ", lat:"Ṣirāṭa llaḏīna anʿamta ʿalayhim ġayri l-maġḍūbi ʿalayhim wa-lā ḍ-ḍāllīn", sq:"Rrugën e atyre që i ke begatuar, jo të atyre mbi të cilët ra hidhërimi, e as të të humburve." }},
+  ],
+  112: [
+    {{ ar:"قُلْ هُوَ اللَّهُ أَحَدٌ", lat:"Qul huwa llāhu aḥad", sq:"Thuaj: Ai është Allahu, Një dhe i Vetëm." }},
+    {{ ar:"اللَّهُ الصَّمَدُ", lat:"Allāhu ṣ-ṣamad", sq:"Allahu është Absoluti, tek i Cili çdokush ka nevojë." }},
+    {{ ar:"لَمْ يَلِدْ وَلَمْ يُولَدْ", lat:"Lam yalid wa-lam yūlad", sq:"Ai nuk ka lindur dhe nuk është i lindur." }},
+    {{ ar:"وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ", lat:"Wa-lam yakun lahū kufuwan aḥad", sq:"Dhe nuk ka askënd të ngjashëm me Të." }},
+  ],
+  113: [
+    {{ ar:"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ", lat:"Qul aʿūḏu bi-rabbi l-falaq", sq:"Thuaj: Kërkoj mbrojtje te Zoti i agimit." }},
+    {{ ar:"مِن شَرِّ مَا خَلَقَ", lat:"Min šarri mā ḫalaq", sq:"Nga e keqja e çdo gjëje që Ai ka krijuar." }},
+    {{ ar:"وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ", lat:"Wa-min šarri ġāsiqin iḏā waqab", sq:"Dhe nga e keqja e errësirës kur bie mbi tokë." }},
+    {{ ar:"وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ", lat:"Wa-min šarri n-naffāṯāti fī l-ʿuqad", sq:"Dhe nga e keqja e atyre që fryjnë në nyje." }},
+    {{ ar:"وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ", lat:"Wa-min šarri ḥāsidin iḏā ḥasad", sq:"Dhe nga e keqja e smirëkeqit kur të smiri." }},
+  ],
+  114: [
+    {{ ar:"قُلْ أَعُوذُ بِرَبِّ النَّاسِ", lat:"Qul aʿūḏu bi-rabbi n-nās", sq:"Thuaj: Kërkoj mbrojtje te Zoti i njerëzve." }},
+    {{ ar:"مَلِكِ النَّاسِ", lat:"Maliki n-nās", sq:"Sunduesit të njerëzve." }},
+    {{ ar:"إِلَٰهِ النَّاسِ", lat:"Ilāhi n-nās", sq:"Zotit të njerëzve." }},
+    {{ ar:"مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ", lat:"Min šarri l-waswāsi l-ḫannās", sq:"Nga e keqja e cytësit të fshehtë." }},
+    {{ ar:"الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ", lat:"Allaḏī yuwaswisu fī ṣudūri n-nās", sq:"I cili fut dyshime në gjokset e njerëzve." }},
+    {{ ar:"مِنَ الْجِنَّةِ وَالنَّاسِ", lat:"Mina l-jinnati wa-n-nās", sq:"Nga xhindet dhe njerëzit." }},
+  ],
+}};
+
+// NASHEEDS
+const NASHEEDS = [
+  {{ id:1, title:"Tala' Al Badru 'Alayna", artist:"Labbayk Ensemble", duration:"3:42",
+    url:"https://archive.org/download/Tala3AlBadru3alayna/Tala3AlBadru3alayna.mp3",
+    cover:"" }},
+  {{ id:2, title:"Muhammadun", artist:"Maher Zain", duration:"4:15",
+    url:"https://archive.org/download/maher_zain_muhammad_pbuh/01.mp3",
+    cover:"" }},
+  {{ id:3, title:"Ya Nabi Salam Alayka", artist:"Sami Yusuf", duration:"5:10",
+    url:"https://archive.org/download/YaNabiSalamAlayka/01_ya_nabi_salam_alayka.mp3",
+    cover:"" }},
+  {{ id:4, title:"Allahu Allah", artist:"Zain Bhikha", duration:"4:28",
+    url:"https://archive.org/download/AllahAllah/AllahAllah.mp3",
+    cover:"" }},
+  {{ id:5, title:"Asma Allah Al Husna", artist:"Mishary Alafasy", duration:"6:22",
+    url:"https://download.quranicaudio.com/audio/miscellaneous/asma_allah_al_husna.mp3",
+    cover:"" }},
+  {{ id:6, title:"Hasbi Rabbi", artist:"Ahmed Bukhatir", duration:"4:55",
+    url:"https://archive.org/download/HasbiRabbi/HasbiRabbi.mp3",
+    cover:"" }},
+  {{ id:7, title:"Subhanallah", artist:"Dawud Wharnsby", duration:"3:30",
+    url:"https://archive.org/download/Subhanallah_Nasheed/Subhanallah.mp3",
+    cover:"" }},
+  {{ id:8, title:"Ya Allah", artist:"Hamza Robertson", duration:"4:44",
+    url:"https://archive.org/download/YaAllah/ya_allah.mp3",
+    cover:"" }},
+];
+
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let currentTab = 'quran';
+let currentFilter = 'all';
+let currentSurah = null;
+let currentSurahIndex = 0;
+let isPlaying = false;
+let currentNasheed = null;
+let audioMode = 'quran'; // 'quran' | 'nasheed'
+const audioEl = document.getElementById('audio-el');
+let deferredInstall = null;
+
+// ═══════════════════════════════════════
+//  PWA
+// ═══════════════════════════════════════
+function setupPWA() {{
+  // Manifest
+  const logoB64 = document.querySelector('.header-logo img').src;
+  const manifest = {{
+    name: "Eidro Al Quran",
+    short_name: "Eidro",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#050505",
+    theme_color: "#0a0a0a",
+    orientation: "portrait",
+    icons: [
+      {{ src: logoB64, sizes: "192x192", type: "image/jpeg", purpose:"any maskable" }},
+      {{ src: logoB64, sizes: "512x512", type: "image/jpeg", purpose:"any maskable" }}
+    ]
+  }};
+  const blob = new Blob([JSON.stringify(manifest)], {{type:'application/json'}});
+  const url = URL.createObjectURL(blob);
+  document.getElementById('pwa-manifest').href = url;
+
+  // Install prompt
+  window.addEventListener('beforeinstallprompt', e => {{
+    e.preventDefault();
+    deferredInstall = e;
+    document.getElementById('install-banner').classList.add('visible');
+  }});
+  document.getElementById('install-btn').addEventListener('click', async () => {{
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    const result = await deferredInstall.userChoice;
+    if (result.outcome === 'accepted') showToast('✨ App u instalua me sukses!');
+    document.getElementById('install-banner').classList.remove('visible');
+    deferredInstall = null;
+  }});
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {{
+    const sw = `
+      const CACHE = 'eidro-v1';
+      self.addEventListener('fetch', e => {{
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+      }});
+    `;
+    const swBlob = new Blob([sw], {{type:'text/javascript'}});
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(()=>{{}});
+  }}
+}}
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {{
+  setupPWA();
+  renderSurahs(SURAHS);
+  renderNasheeds();
+  setupAudio();
+  setupMediaSession();
+
+  // Splash exit
+  setTimeout(() => {{
+    document.getElementById('splash').classList.add('exit');
+    setTimeout(() => {{
+      document.getElementById('splash').style.display = 'none';
+    }}, 1000);
+  }}, 2800);
+}});
+
+// ═══════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════
+function setTab(tab) {{
+  currentTab = tab;
+  document.getElementById('view-quran').style.display = tab === 'quran' ? 'block' : 'none';
+  document.getElementById('view-nasheed').style.display = tab === 'nasheed' ? 'block' : 'none';
+  document.getElementById('tab-quran').classList.toggle('active', tab === 'quran');
+  document.getElementById('tab-nasheed').classList.toggle('active', tab === 'nasheed');
+  // Hide search/filter for nasheed
+  if (tab === 'nasheed') {{
+    document.getElementById('search-wrap').classList.remove('visible');
+    document.getElementById('filter-bar').classList.remove('visible');
+    document.getElementById('search-btn').classList.remove('active');
+    document.getElementById('filter-btn').classList.remove('active');
+  }}
+}}
+
+// ═══════════════════════════════════════
+//  SEARCH / FILTER
+// ═══════════════════════════════════════
+function toggleSearch() {{
+  const el = document.getElementById('search-wrap');
+  const btn = document.getElementById('search-btn');
+  el.classList.toggle('visible');
+  btn.classList.toggle('active');
+  if (el.classList.contains('visible')) document.getElementById('search-input').focus();
+}}
+function toggleFilter() {{
+  const el = document.getElementById('filter-bar');
+  const btn = document.getElementById('filter-btn');
+  el.classList.toggle('visible');
+  btn.classList.toggle('active');
+}}
+function setFilter(type, btn) {{
+  currentFilter = type;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  filterSurahs();
+}}
+function filterSurahs() {{
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const list = SURAHS.filter(s =>
+    (currentFilter === 'all' || s.type === currentFilter) &&
+    (s.lat.toLowerCase().includes(q) || s.sq.toLowerCase().includes(q) || s.ar.includes(q) || String(s.id).includes(q))
+  );
+  renderSurahs(list);
+}}
+
+// ═══════════════════════════════════════
+//  RENDER SURAHS
+// ═══════════════════════════════════════
+function renderSurahs(list) {{
+  const grid = document.getElementById('surah-grid');
+  grid.innerHTML = '';
+  list.forEach((s, i) => {{
+    const card = document.createElement('div');
+    card.className = 'surah-card';
+    card.style.animationDelay = `${{i * 25}}ms`;
+    card.innerHTML = `
+      <div class="surah-num-badge">${{String(s.id).padStart(3,'0').replace(/^0+/,'') || s.id}}</div>
+      <div class="surah-body">
+        <div class="surah-arabic">${{s.ar}}</div>
+        <div class="surah-latin">${{s.lat}}</div>
+        <div class="surah-sq">${{s.sq}}</div>
+      </div>
+      <div class="surah-meta">
+        <div class="surah-ayahs">${{s.ayahs}} ajete</div>
+        <div class="type-badge type-${{s.type}}">${{s.type === 'mekke' ? 'Meke' : 'Medine'}}</div>
+      </div>
+      <div class="play-icon">▶</div>
+    `;
+    card.onclick = () => openSurah(s, i);
+    grid.appendChild(card);
+  }});
+}}
+
+// ═══════════════════════════════════════
+//  RENDER NASHEEDS
+// ═══════════════════════════════════════
+function renderNasheeds() {{
+  const grid = document.getElementById('nasheed-grid');
+  grid.innerHTML = '';
+  NASHEEDS.forEach((n, i) => {{
+    const card = document.createElement('div');
+    card.className = 'nasheed-card';
+    card.id = `nasheed-${{n.id}}`;
+    card.style.animationDelay = `${{i * 30}}ms`;
+    card.innerHTML = `
+      <div class="nasheed-cover">
+        ${{n.cover ? `<img src="${{n.cover}}" alt="">` : '<div class="nasheed-cover-placeholder">🎵</div>'}}
+      </div>
+      <div class="nasheed-info">
+        <div class="nasheed-title">${{n.title}}</div>
+        <div class="nasheed-artist">${{n.artist}}</div>
+      </div>
+      <div class="nasheed-duration">${{n.duration}}</div>
+      <div class="nasheed-play" id="nasheed-play-${{n.id}}">▶</div>
+    `;
+    card.onclick = () => playNasheed(n);
+    grid.appendChild(card);
+  }});
+}}
+
+// ═══════════════════════════════════════
+//  OPEN SURAH
+// ═══════════════════════════════════════
+function openSurah(s, idx) {{
+  currentSurah = s;
+  currentSurahIndex = idx !== undefined ? idx : SURAHS.indexOf(s);
+  audioMode = 'quran';
+
+  document.getElementById('sv-arabic').textContent = s.ar;
+  document.getElementById('sv-meta').textContent = `${{s.lat}} · ${{s.sq}} · ${{s.ayahs}} ajete`;
+  document.getElementById('player-title').textContent = `${{s.lat}} (${{s.ar}})`;
+
+  document.getElementById('surah-view').classList.add('open');
+  renderAyahs(s);
+  loadSurahAudio(s);
+  document.getElementById('mini-player').classList.remove('visible');
+}}
+
+function closeSurahView() {{
+  document.getElementById('surah-view').classList.remove('open');
+  if (isPlaying && currentSurah) {{
+    const mp = document.getElementById('mini-player');
+    mp.style.display = 'flex';
+    requestAnimationFrame(() => mp.classList.add('visible'));
+    document.getElementById('mini-title').textContent = currentSurah.lat;
+    document.getElementById('mini-sub').textContent = audioMode === 'nasheed' ? (currentNasheed?.artist || '') : 'Mishary Alafasy';
+  }}
+}}
+
+// ═══════════════════════════════════════
+//  AYAHS
+// ═══════════════════════════════════════
+function renderAyahs(s) {{
+  const list = document.getElementById('ayah-list');
+  const ayahs = AYAH_DATA[s.id] || generateDemoAyahs(s);
+  list.innerHTML = '';
+  ayahs.forEach((a, i) => {{
+    const card = document.createElement('div');
+    card.className = 'ayah-card';
+    card.id = `ayah-${{i}}`;
+    card.style.animationDelay = `${{i * 35}}ms`;
+    card.innerHTML = `
+      <div class="ayah-num">${{i+1}}</div>
+      <div class="ayah-arabic">${{a.ar}}</div>
+      <div class="divider-line"></div>
+      <div class="ayah-trans">${{a.lat}}</div>
+      <div class="ayah-sq">${{a.sq}}</div>
+    `;
+    list.appendChild(card);
+  }});
+}}
+
+function generateDemoAyahs(s) {{
+  return Array.from({{length: Math.min(s.ayahs, 8)}}, (_, i) => ({{
+    ar: "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+    lat: `Ajeti ${{i+1}} · teksti i plotë disponohet online`,
+    sq: `Ajeti numër ${{i+1}} — Versioni i plotë në quran.com`
+  }}));
+}}
+
+// ═══════════════════════════════════════
+//  AUDIO — QURAN
+// ═══════════════════════════════════════
+function loadSurahAudio(s) {{
+  audioEl.src = s.audio;
+  audioEl.load();
+  if (isPlaying) audioEl.play().catch(()=>{{}});
+}}
+
+function prevSurah() {{
+  if (currentSurahIndex > 0) {{
+    const prev = SURAHS[currentSurahIndex - 1];
+    openSurah(prev, currentSurahIndex - 1);
+  }}
+}}
+function nextSurah() {{
+  if (currentSurahIndex < SURAHS.length - 1) {{
+    const next = SURAHS[currentSurahIndex + 1];
+    openSurah(next, currentSurahIndex + 1);
+  }}
+}}
+
+// ═══════════════════════════════════════
+//  AUDIO — NASHEED
+// ═══════════════════════════════════════
+function playNasheed(n) {{
+  audioMode = 'nasheed';
+  currentNasheed = n;
+
+  // Update active state
+  document.querySelectorAll('.nasheed-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nasheed-play').forEach(p => {{ p.textContent = '▶'; }});
+  document.getElementById(`nasheed-${{n.id}}`).classList.add('active');
+
+  audioEl.src = n.url;
+  audioEl.load();
+  audioEl.play().then(() => {{
+    isPlaying = true;
+    document.getElementById(`nasheed-play-${{n.id}}`).textContent = '⏸';
+    showMiniPlayer(n.title, n.artist);
+    updatePlayButtons('⏸');
+  }}).catch(err => {{
+    showToast('⚠️ Audio nuk u ngarkua. Provo me vonë.');
+    console.warn(err);
+  }});
+}}
+
+// ═══════════════════════════════════════
+//  TOGGLE PLAY
+// ═══════════════════════════════════════
+function togglePlay() {{
+  if (isPlaying) {{
+    audioEl.pause();
+    isPlaying = false;
+    updatePlayButtons('▶');
+    document.getElementById('play-btn').classList.remove('playing');
+  }} else {{
+    audioEl.play().then(() => {{
+      isPlaying = true;
+      updatePlayButtons('⏸');
+      document.getElementById('play-btn').classList.add('playing');
+    }}).catch(() => {{
+      showToast('⚠️ Zgjidhni një sure ose nasheed');
+    }});
+  }}
+}}
+
+function updatePlayButtons(icon) {{
+  document.getElementById('play-btn').textContent = icon;
+  document.getElementById('mini-play-btn').textContent = icon;
+  if (audioMode === 'nasheed' && currentNasheed) {{
+    const np = document.getElementById(`nasheed-play-${{currentNasheed.id}}`);
+    if (np) np.textContent = icon;
+  }}
+}}
+
+function stopAndClose() {{
+  audioEl.pause();
+  audioEl.src = '';
+  isPlaying = false;
+  currentNasheed = null;
+  const mp = document.getElementById('mini-player');
+  mp.classList.remove('visible');
+  setTimeout(() => {{ mp.style.display = 'none'; }}, 400);
+  document.querySelectorAll('.nasheed-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.nasheed-play').forEach(p => {{ p.textContent = '▶'; }});
+}}
+
+// ═══════════════════════════════════════
+//  MINI PLAYER
+// ═══════════════════════════════════════
+function showMiniPlayer(title, sub) {{
+  const mp = document.getElementById('mini-player');
+  document.getElementById('mini-title').textContent = title;
+  document.getElementById('mini-sub').textContent = sub;
+  mp.style.display = 'flex';
+  requestAnimationFrame(() => mp.classList.add('visible'));
+}}
+
+// ═══════════════════════════════════════
+//  SEEK
+// ═══════════════════════════════════════
+function seekAudio(e) {{
+  if (!audioEl.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  audioEl.currentTime = pct * audioEl.duration;
+}}
+
+// ═══════════════════════════════════════
+//  AUDIO EVENTS
+// ═══════════════════════════════════════
+function setupAudio() {{
+  audioEl.addEventListener('timeupdate', () => {{
+    if (!audioEl.duration) return;
+    const pct = (audioEl.currentTime / audioEl.duration) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('mini-fill').style.width = pct + '%';
+    document.getElementById('time-cur').textContent = fmtTime(audioEl.currentTime);
+    document.getElementById('time-tot').textContent = fmtTime(audioEl.duration);
+  }});
+
+  audioEl.addEventListener('ended', () => {{
+    isPlaying = false;
+    updatePlayButtons('▶');
+    document.getElementById('play-btn').classList.remove('playing');
+    document.getElementById('progress-fill').style.width = '0%';
+    document.getElementById('mini-fill').style.width = '0%';
+    if (audioMode === 'quran') nextSurah();
+  }});
+
+  audioEl.addEventListener('play', () => {{
+    isPlaying = true;
+    updatePlayButtons('⏸');
+    document.getElementById('play-btn').classList.add('playing');
+  }});
+
+  audioEl.addEventListener('pause', () => {{
+    isPlaying = false;
+    updatePlayButtons('▶');
+    document.getElementById('play-btn').classList.remove('playing');
+  }});
+
+  audioEl.addEventListener('error', () => {{
+    showToast('⚠️ Nuk mund të ngarkohet audio');
+  }});
+}}
+
+function fmtTime(s) {{
+  if (isNaN(s) || !isFinite(s)) return '0:00';
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return `${{m}}:${{sec.toString().padStart(2,'0')}}`;
+}}
+
+// ═══════════════════════════════════════
+//  MEDIA SESSION
+// ═══════════════════════════════════════
+function setupMediaSession() {{
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({{
+    title:'Eidro Al Quran',
+    artist:'Mishary Rashid Alafasy',
+    album:'Kurani Famëlartë',
+  }});
+  navigator.mediaSession.setActionHandler('play', () => {{ audioEl.play(); }});
+  navigator.mediaSession.setActionHandler('pause', () => {{ audioEl.pause(); }});
+  navigator.mediaSession.setActionHandler('nexttrack', nextSurah);
+  navigator.mediaSession.setActionHandler('previoustrack', prevSurah);
+}}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(msg, duration=2500) {{
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}}
+
+// ═══════════════════════════════════════
+//  KEYBOARD / BACK
+// ═══════════════════════════════════════
+document.addEventListener('keydown', e => {{
+  if (e.key === 'Escape') closeSurahView();
+  if (e.key === ' ') {{ e.preventDefault(); togglePlay(); }}
+}});
+</script>
+</body>
+</html>'''
+
+with open('/home/claude/eidro-al-quran-v2.html', 'w') as f:
+    f.write(html)
+print(f"HTML written: {len(html)} chars")
+PYEOF
