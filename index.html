@@ -600,50 +600,7 @@ body {
     </div>
 
     <!-- Guide -->
-    <div id="guideSection" class="guide-section" style="margin-top:32px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div class="guide-title">📖 Si të shtosh nasheed të ri</div>
-        <button class="guide-toggle" onclick="toggleGuide()">Shfaq / Fshih</button>
-      </div>
-      <div id="guideContent">
-        <div style="height:12px"></div>
-        <div class="guide-step">
-          <div class="guide-num">1</div>
-          <div class="guide-txt">Ngarko MP3 file (max 25MB) në GitHub repo, brenda dosjes <span class="guide-code">nasheeds/</span></div>
-        </div>
-        <div class="guide-step">
-          <div class="guide-num">2</div>
-          <div class="guide-txt">Ngarko cover image (JPG/PNG) në dosjen <span class="guide-code">covers/</span></div>
-        </div>
-        <div class="guide-step">
-          <div class="guide-num">3</div>
-          <div class="guide-txt">Shto nasheed të ri në array-in <span class="guide-code">const songs</span> në fillim të JavaScript:</div>
-        </div>
-        <div style="background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:14px;margin:8px 0;font-family:monospace;font-size:0.73rem;color:var(--txt2);line-height:1.8">
-          { <br>
-          &nbsp;&nbsp;title: <span style="color:#c8a96e">"Emri i Nasheed"</span>,<br>
-          &nbsp;&nbsp;artist: <span style="color:#c8a96e">"Emri i Artistit"</span>,<br>
-          &nbsp;&nbsp;cat: <span style="color:#c8a96e">"Arabic"</span>, <span style="color:var(--txt3)">// War Nasheed, Workout, Wedding, Relax, Emotional, Ramadan, Kids, Trending, Arabic, Albanian Islamic</span><br>
-          &nbsp;&nbsp;cover: <span style="color:#c8a96e">"covers/cover1.jpg"</span>, <span style="color:var(--txt3)">// ose raw GitHub link</span><br>
-          &nbsp;&nbsp;src: <span style="color:#c8a96e">"nasheeds/nasheed1.mp3"</span>, <span style="color:var(--txt3)">// ose raw.githubusercontent.com link</span><br>
-          &nbsp;&nbsp;trending: <span style="color:#e8a870">true</span>, <span style="color:var(--txt3)">// opsional — shfaqet në Trending</span><br>
-          },
-        </div>
-        <div class="guide-step">
-          <div class="guide-num">4</div>
-          <div class="guide-txt">Commit dhe push në GitHub. GitHub Pages e shfaq automatikisht ndryshimin!</div>
-        </div>
-        <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(200,169,110,0.06);border:0.5px solid rgba(200,169,110,0.2)">
-          <div style="font-size:0.72rem;color:var(--gold);font-weight:600;margin-bottom:6px">💡 GitHub Raw URL format:</div>
-          <div style="font-family:monospace;font-size:0.68rem;color:var(--txt2);line-height:1.8">
-            https://raw.githubusercontent.com/<span style="color:var(--gold)">USERNAME</span>/<span style="color:var(--gold)">REPO</span>/main/nasheeds/<span style="color:var(--gold)">nasheed.mp3</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
+   
   <!-- PLAYER -->
   <div id="player">
     <div class="player-viz"><div class="player-viz-bar" id="vizBar"></div></div>
